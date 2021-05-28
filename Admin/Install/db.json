@@ -1,3 +1,45 @@
 {
-
+    "shop_category": {
+        "name": "shop_category",
+        "fields": {
+            "shop_id": {
+                "name": "shop_id",
+                "type": "INT",
+                "null": false,
+                "primary": true
+            }
+        }
+    },
+    "shop_category_l11n": {
+        "name": "shop_category_l11n",
+        "fields": {
+            "shop_category_l11n_id": {
+                "name": "shop_category_l11n_id",
+                "type": "INT",
+                "null": false,
+                "primary": true,
+                "autoincrement": true
+            },
+            "shop_category_l11n_title": {
+                "name": "shop_category_l11n_title",
+                "type": "VARCHAR(255)",
+                "null": false
+            },
+            "shop_category_l11n_category": {
+                "name": "shop_category_l11n_category",
+                "type": "INT",
+                "null": false,
+                "foreignTable": "shop_category",
+                "foreignKey": "shop_category_id"
+            },
+            "shop_category_l11n_language": {
+                "name": "shop_category_l11n_language",
+                "type": "VARCHAR(2)",
+                "default": null,
+                "null": true,
+                "foreignTable": "language",
+                "foreignKey": "language_639_1"
+            }
+        }
+    }
 }
