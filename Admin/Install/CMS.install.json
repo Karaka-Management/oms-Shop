@@ -1,0 +1,7 @@
+[
+    {
+        "src": "Modules/Shop/Install/Application/Shop",
+        "dest": "Web/Shop",
+        "name": "Shop"
+    }
+]

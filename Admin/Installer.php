@@ -18,6 +18,7 @@ use phpOMS\DataStorage\Database\DatabasePool;
 use phpOMS\Module\InstallerAbstract;
 use phpOMS\Module\ModuleInfo;
 use phpOMS\System\File\Local\Directory;
+use phpOMS\Config\SettingsInterface;
 
 /**
  * Installer class.
@@ -32,14 +33,15 @@ final class Installer extends InstallerAbstract
     /**
      * {@inheritdoc}
      */
-    public static function install(DatabasePool $dbPool, ModuleInfo $info) : void
+    public static function install(DatabasePool $dbPool, ModuleInfo $info, SettingsInterface $cfgHandler) : void
     {
         if (\file_exists(__DIR__ . '/../../../Web/Shop')) {
             Directory::delete(__DIR__ . '/../../../Web/Shop');
         }
 
+        // @todo: replace with app installation (see TimeRecording...)
         Directory::copy(__DIR__ . '/Install/Shop', __DIR__ . '/../../../Web/Shop');
 
-        parent::install($dbPool, $info);
+        parent::install($dbPool, $info, $cfgHandler);
     }
 }

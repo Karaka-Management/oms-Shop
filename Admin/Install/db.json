@@ -2,8 +2,8 @@
     "shop_category": {
         "name": "shop_category",
         "fields": {
-            "shop_id": {
-                "name": "shop_id",
+            "shop_category_id": {
+                "name": "shop_category_id",
                 "type": "INT",
                 "null": false,
                 "primary": true
