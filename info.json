@@ -17,9 +17,11 @@
     "description": "The search module.",
     "directory": "Shop",
     "dependencies": {
-        "Admin": "1.0.0"
+        "Admin": "1.0.0",
+        "CMS": "1.0.0"
     },
     "providing": {
+        "CMS": "*"
     },
     "load": [
         {
