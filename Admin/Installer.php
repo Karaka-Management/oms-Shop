@@ -39,9 +39,6 @@ final class Installer extends InstallerAbstract
             Directory::delete(__DIR__ . '/../../../Web/Shop');
         }
 
-        // @todo: replace with app installation (see TimeRecording...)
-        Directory::copy(__DIR__ . '/Install/Shop', __DIR__ . '/../../../Web/Shop');
-
         parent::install($dbPool, $info, $cfgHandler);
     }
 }

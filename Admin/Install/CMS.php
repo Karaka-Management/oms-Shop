@@ -16,7 +16,7 @@ namespace Modules\Shop\Admin\Install;
 
 use Model\Setting;
 use Model\SettingMapper;
-use phpOMS\DataStorage\Database\DatabasePool;
+use phpOMS\Application\ApplicationAbstract;
 
 /**
  * CMS class.
@@ -32,14 +32,14 @@ class CMS
      * Install media providing
      *
      * @param string       $path   Module path
-     * @param DatabasePool $dbPool Database pool for database interaction
+     * @param ApplicationAbstract $app Application
      *
      * @return void
      *
      * @since 1.0.0
      */
-    public static function install(string $path, DatabasePool $dbPool) : void
+    public static function install(string $path, ApplicationAbstract $app) : void
     {
-        $app = \Modules\CMS\Admin\Installer::installExternal($dbPool, ['path' => __DIR__ . '/CMS.install.json']);
+        $app = \Modules\CMS\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/CMS.install.json']);
     }
 }

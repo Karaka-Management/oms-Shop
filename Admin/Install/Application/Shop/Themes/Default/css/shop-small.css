@@ -1,0 +1,137 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  max-height: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  color: #242424;
+}
+
+header {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+footer {
+  margin-top: 1rem;
+  text-align: right;
+  padding: 2rem 0 2rem 0;
+}
+
+footer hr {
+  margin-bottom: 2rem;
+}
+
+header hr, footer hr {
+  border: 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+header img {
+  max-width: 300px;
+  min-width: 100px;
+  width: 25%;
+  margin: 3rem 0 0 0;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-weight: 300;
+  margin: 3rem 0 1rem 0;
+}
+
+header h2 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0rem 0 3rem 0;
+  color: #777;
+}
+
+nav {
+  width: 100%;
+  text-align: center;
+  color: #e6e6e6;
+}
+
+nav a {
+  color: #25acff;
+}
+
+main {
+  flex-grow: 1;
+}
+
+nav ul, footer ul {
+  display: inline-block;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav li, footer li {
+  display: inline-block;
+  padding: .5rem 1rem .5rem 1rem;
+}
+
+a {
+  color: #25acff;
+  text-decoration: none;
+}
+
+.floater {
+  width: 80%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.content ul {
+  list-style: none;
+}
+
+.content li:before {
+  content: "\2022";
+  color: #25acff;
+  font-weight: bold;
+  display: inline-block;
+  width: 1rem;
+  margin-left: -1rem;
+}
+
+footer a {
+  text-decoration: underline;
+}
+
+footer a:hover {
+  text-decoration: none;
+}
+
+.content p, .content ul {
+  line-height: 1.7rem;
+}
+
+blockquote {
+  color: #fff;
+  background: #25acff;
+  border: 1px solid #0480ce;
+  padding: 1rem;
+  border-radius: 5px;
+  margin: 1.5rem;
+}
+
+code {
+  padding: 1rem;
+  background: #eee;
+  display: block;
+  border-left: 3px solid #25acff;
+  border-radius: 5px;
+}
+
+code pre {
+  margin: 0;
+}
