@@ -15,11 +15,9 @@ declare(strict_types=1);
 namespace Web\{APPNAME};
 
 use Model\CoreSettings;
-
 use Modules\Admin\Models\AccountMapper;
 use Modules\Admin\Models\LocalizationMapper;
 use Modules\Admin\Models\NullAccount;
-
 use phpOMS\Account\Account;
 use phpOMS\Account\AccountManager;
 use phpOMS\Asset\AssetType;
@@ -44,7 +42,6 @@ use phpOMS\Router\RouteVerb;
 use phpOMS\Router\WebRouter;
 use phpOMS\System\File\PathException;
 use phpOMS\Uri\UriFactory;
-
 use phpOMS\Views\View;
 use Web\WebApplication;
 use Web\{APPNAME}\ShopView;
@@ -148,8 +145,8 @@ final class Application
         $this->app->l11nServer     = LocalizationMapper::get(1);
         $this->app->orgId          = $this->getApplicationOrganization($request, $this->config['app']);
 
-        $aid = Auth::authenticate($this->app->sessionManager);
-        $request->header->account = $aid;
+        $aid                       = Auth::authenticate($this->app->sessionManager);
+        $request->header->account  = $aid;
         $response->header->account = $aid;
 
         $account = $this->loadAccount($request);
