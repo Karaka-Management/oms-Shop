@@ -15,10 +15,14 @@ declare(strict_types=1);
 use phpOMS\Uri\UriFactory;
 
 ?>
-<nav>
-   <ul>
-      <li><a href="<?= UriFactory::build('{/app}'); ?>">Main</a>
-      <li>|
-      <li><a href="<?= UriFactory::build('{/app}/components'); ?>">Components</a>
-   </ul>
-</nav>
+<header>
+	<nav>
+	   <ul>
+	      <li><a href="<?= UriFactory::build('{/app}'); ?>">Website</a>
+	      <li><a href="<?= UriFactory::build('{/app}/components'); ?>">Profile</a>
+	   </ul>
+	</nav>
+	<div id="search">
+		<input type="text">
+	</div>
+</header>

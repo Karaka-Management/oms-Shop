@@ -21,7 +21,7 @@ use phpOMS\Module\ModuleAbstract;
 use phpOMS\Views\View;
 
 /**
- * Calendar controller class.
+ * App controller class.
  *
  * @package Web\{APPNAME}
  * @license OMS License 1.0
