@@ -1,5 +1,6 @@
 [
     {
+        "type": "application",
         "src": "Modules/Shop/Admin/Install/Application/Shop",
         "dest": "Web/Shop",
         "name": "Shop"
