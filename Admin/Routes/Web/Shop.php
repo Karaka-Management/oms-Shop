@@ -11,7 +11,7 @@ return [
             'dest' => '\Modules\Shop\Controller\ShopController:viewWelcome',
             'verb' => RouteVerb::GET,
             'permission' => [
-                'module' => ShopController::MODULE_NAME,
+                'module' => ShopController::NAME,
                 'type'  => PermissionType::READ,
                 'state' => PermissionState::SHOP,
             ],
