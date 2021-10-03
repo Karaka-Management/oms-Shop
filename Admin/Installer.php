@@ -31,6 +31,14 @@ use phpOMS\Config\SettingsInterface;
 final class Installer extends InstallerAbstract
 {
     /**
+     * Path of the file
+     *
+     * @var string
+     * @since 1.0.0
+     */
+    public const PATH = __DIR__;
+
+    /**
      * {@inheritdoc}
      */
     public static function install(DatabasePool $dbPool, ModuleInfo $info, SettingsInterface $cfgHandler) : void
