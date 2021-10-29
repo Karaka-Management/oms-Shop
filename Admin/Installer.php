@@ -14,11 +14,11 @@ declare(strict_types=1);
 
 namespace Modules\Shop\Admin;
 
+use phpOMS\Config\SettingsInterface;
 use phpOMS\DataStorage\Database\DatabasePool;
 use phpOMS\Module\InstallerAbstract;
 use phpOMS\Module\ModuleInfo;
 use phpOMS\System\File\Local\Directory;
-use phpOMS\Config\SettingsInterface;
 
 /**
  * Installer class.

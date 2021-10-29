@@ -8,12 +8,12 @@ use phpOMS\Router\RouteVerb;
 return [
     '^(\/)(\?.*)*$' => [
         [
-            'dest' => '\Modules\Shop\Controller\ShopController:viewWelcome',
-            'verb' => RouteVerb::GET,
+            'dest'       => '\Modules\Shop\Controller\ShopController:viewWelcome',
+            'verb'       => RouteVerb::GET,
             'permission' => [
                 'module' => ShopController::NAME,
-                'type'  => PermissionType::READ,
-                'state' => PermissionState::SHOP,
+                'type'   => PermissionType::READ,
+                'state'  => PermissionState::SHOP,
             ],
         ],
     ],

@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Shop\Admin\Install;
 
-use Model\Setting;
-use Model\SettingMapper;
 use phpOMS\Application\ApplicationAbstract;
 
 /**
