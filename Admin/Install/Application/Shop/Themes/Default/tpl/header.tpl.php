@@ -16,13 +16,13 @@ use phpOMS\Uri\UriFactory;
 
 ?>
 <header>
-	<nav>
-	   <ul>
-	      <li><a href="<?= UriFactory::build('{/app}'); ?>">Website</a>
-	      <li><a href="<?= UriFactory::build('{/app}/components'); ?>">Profile</a>
-	   </ul>
-	</nav>
-	<div id="search">
-		<input type="text">
-	</div>
+    <nav>
+       <ul>
+          <li><a href="<?= UriFactory::build('{/app}'); ?>">Website</a>
+          <li><a href="<?= UriFactory::build('{/app}/components'); ?>">Profile</a>
+       </ul>
+    </nav>
+    <div id="search">
+        <input type="text">
+    </div>
 </header>
