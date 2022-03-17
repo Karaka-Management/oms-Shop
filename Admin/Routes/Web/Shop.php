@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use Modules\Shop\Controller\ShopController;
-use Modules\Shop\Models\PermissionState;
+use Modules\Shop\Models\PermissionCategory;
 use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
@@ -13,7 +13,7 @@ return [
             'permission' => [
                 'module' => ShopController::NAME,
                 'type'   => PermissionType::READ,
-                'state'  => PermissionState::SHOP,
+                'state'  => PermissionCategory::SHOP,
             ],
         ],
     ],
