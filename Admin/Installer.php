@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Shop\Admin;
 
+use phpOMS\Application\ApplicationAbstract;
 use phpOMS\Config\SettingsInterface;
 use phpOMS\DataStorage\Database\DatabasePool;
 use phpOMS\Module\InstallerAbstract;
@@ -41,12 +42,12 @@ final class Installer extends InstallerAbstract
     /**
      * {@inheritdoc}
      */
-    public static function install(DatabasePool $dbPool, ModuleInfo $info, SettingsInterface $cfgHandler) : void
+    public static function install(ApplicationAbstract $app, ModuleInfo $info, SettingsInterface $cfgHandler) : void
     {
         if (\file_exists(__DIR__ . '/../../../Web/Shop')) {
             Directory::delete(__DIR__ . '/../../../Web/Shop');
         }
 
-        parent::install($dbPool, $info, $cfgHandler);
+        parent::install($app, $info, $cfgHandler);
     }
 }
