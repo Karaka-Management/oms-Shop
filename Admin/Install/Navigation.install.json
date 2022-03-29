@@ -12,7 +12,7 @@
         "from": "Shop",
         "permission": {
             "permission": 2,
-            "type": null,
+            "category": null,
             "element": null
         },
         "parent": 0,
