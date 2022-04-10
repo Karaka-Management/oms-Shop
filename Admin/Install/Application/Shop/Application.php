@@ -363,7 +363,6 @@ final class Application
         $head->addAsset(AssetType::JS, '../jsOMS/Utils/oLib.js');
         $head->addAsset(AssetType::JS, '../jsOMS/UnhandledException.js');
         $head->addAsset(AssetType::JS, '../Web/{APPNAME}/js/shop.js', ['type' => 'module']);
-        $head->addAsset(AssetType::JSLATE, '../Modules/Navigation/Controller.js', ['type' => 'module']);
 
         $script = '';
         $response->header->set(
