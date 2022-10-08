@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+declare(strict_types=1);
 
 use Modules\Shop\Controller\ShopController;
 use Modules\Shop\Models\PermissionCategory;

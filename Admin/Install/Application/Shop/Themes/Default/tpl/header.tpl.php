@@ -23,6 +23,6 @@ use phpOMS\Uri\UriFactory;
        </ul>
     </nav>
     <div id="search">
-        <input type="text">
+        <input type="text" name="search-bar">
     </div>
 </header>
