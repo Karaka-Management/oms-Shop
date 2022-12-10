@@ -18,8 +18,8 @@ use phpOMS\Uri\UriFactory;
 <header>
     <nav>
        <ul>
-          <li><a href="<?= UriFactory::build('{/app}'); ?>">Website</a>
-          <li><a href="<?= UriFactory::build('{/app}/components'); ?>">Profile</a>
+          <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}'); ?>">Website</a>
+          <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/components'); ?>">Profile</a>
        </ul>
     </nav>
     <div id="search">

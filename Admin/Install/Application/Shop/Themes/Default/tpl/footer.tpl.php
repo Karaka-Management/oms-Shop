@@ -19,9 +19,9 @@ use phpOMS\Uri\UriFactory;
     <div class="floater">
         <hr>
         <ul>
-            <li><a href="<?= UriFactory::build('{/app}/terms'); ?>">Terms</a>
-            <li><a href="<?= UriFactory::build('{/app}/privacy'); ?>">Data Protection</a>
-            <li><a href="<?= UriFactory::build('{/app}/imprint'); ?>">Imprint</a>
+            <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/terms'); ?>">Terms</a>
+            <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/privacy'); ?>">Data Protection</a>
+            <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/imprint'); ?>">Imprint</a>
         </ul>
     </div>
 </footer>
