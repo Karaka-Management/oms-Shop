@@ -17,17 +17,17 @@ namespace Modules\Shop\Admin\Install;
 use phpOMS\Application\ApplicationAbstract;
 
 /**
- * Navigation class.
+ * Media class.
  *
  * @package Modules\Shop\Admin\Install
  * @license OMS License 1.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
-class Navigation
+class Media
 {
     /**
-     * Install navigation providing
+     * Install media providing
      *
      * @param ApplicationAbstract $app  Application
      * @param string              $path Module path
@@ -38,6 +38,6 @@ class Navigation
      */
     public static function install(ApplicationAbstract $app, string $path) : void
     {
-        \Modules\Navigation\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Navigation.install.json']);
+        \Modules\Media\Admin\Installer::installExternal($app, ['path' => __DIR__ . '/Media.install.json']);
     }
 }

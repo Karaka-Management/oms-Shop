@@ -2,7 +2,7 @@
 /**
  * Karaka
  *
- * PHP Version 7.4
+ * PHP Version 8.1
  *
  * @package   Modules\Shop
  * @copyright Dennis Eichhorn

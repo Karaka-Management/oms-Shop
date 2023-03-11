@@ -2,7 +2,7 @@
 /**
  * Karaka
  *
- * PHP Version 7.4
+ * PHP Version 8.1
  *
  * @package   Modules\Shop\Models
  * @copyright Dennis Eichhorn
@@ -33,4 +33,6 @@ abstract class PermissionCategory extends Enum
     public const SELLER = 3;
 
     public const SHOP = 4;
+
+    public const BUY = 5;
 }
