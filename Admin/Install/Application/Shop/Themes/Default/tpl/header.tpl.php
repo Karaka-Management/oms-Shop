@@ -6,7 +6,7 @@
  *
  * @package   Web\{APPNAME}
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -18,8 +18,8 @@ use phpOMS\Uri\UriFactory;
 <header>
     <nav>
        <ul>
-          <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}'); ?>">Website</a>
-          <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/components'); ?>">Profile</a>
+          <li><a href="<?= UriFactory::build('{/base}/{/app}'); ?>">Website</a>
+          <li><a href="<?= UriFactory::build('{/base}/{/app}/components'); ?>">Profile</a>
        </ul>
     </nav>
     <div id="search">

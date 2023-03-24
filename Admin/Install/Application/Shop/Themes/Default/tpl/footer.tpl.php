@@ -6,7 +6,7 @@
  *
  * @package   Template
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -19,9 +19,9 @@ use phpOMS\Uri\UriFactory;
     <div class="floater">
         <hr>
         <ul>
-            <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/terms'); ?>">Terms</a>
-            <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/privacy'); ?>">Data Protection</a>
-            <li><a href="<?= UriFactory::build('{/lang}/{/app}/{/app}/imprint'); ?>">Imprint</a>
+            <li><a href="<?= UriFactory::build('{/base}/{/app}/terms'); ?>">Terms</a>
+            <li><a href="<?= UriFactory::build('{/base}/{/app}/privacy'); ?>">Data Protection</a>
+            <li><a href="<?= UriFactory::build('{/base}/{/app}/imprint'); ?>">Imprint</a>
         </ul>
     </div>
 </footer>

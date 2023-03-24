@@ -6,7 +6,7 @@
  *
  * @package   Modules\Shop
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -33,7 +33,7 @@ use phpOMS\Uri\HttpUri;
  * Api controller
  *
  * @package Modules\Shop
- * @license OMS License 1.0
+ * @license OMS License 2.0
  * @link    https://jingga.app
  * @since   1.0.0
  */
@@ -169,7 +169,7 @@ final class ApiController extends Controller
 
         // \Stripe\Stripe::setApiKey($stripeSecretKey);
 
-        $api_key = $_SERVER['OMS_STRIPE_SECRET'] ?? '';
+        $api_key         = $_SERVER['OMS_STRIPE_SECRET'] ?? '';
         $endpoint_secret = $_SERVER['OMS_STRIPE_PUBLIC'] ?? '';
 
         $include = \realpath(__DIR__ . '/../../../Resources/');

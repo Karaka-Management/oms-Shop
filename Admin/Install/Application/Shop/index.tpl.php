@@ -6,7 +6,7 @@
  *
  * @package   Web\{APPNAME}
  * @copyright Dennis Eichhorn
- * @license   OMS License 1.0
+ * @license   OMS License 2.0
  * @version   1.0.0
  *
  * @link      https://jingga.app
@@ -32,7 +32,7 @@ $dispatch = $this->getData('dispatch') ?? [];
     <meta name="description" content="<?= $this->getHtml(':meta', '0', '0'); ?>">
     <?= $head->render(); ?>
 
-    <base href="<?= UriFactory::build('{/base}'); ?>/">
+    <base href="/">
 
     <link rel="manifest" href="<?= UriFactory::build('Web/{APPNAME}/manifest.json'); ?>">
     <link rel="shortcut icon" href="<?= UriFactory::build('Web/{APPNAME}/img/favicon.ico'); ?>" type="image/x-icon">
