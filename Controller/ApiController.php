@@ -18,10 +18,14 @@ use Modules\Billing\Models\Attribute\BillAttributeTypeMapper;
 use Modules\Billing\Models\Bill;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
+use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\ItemManagement\Models\NullItem;
 use Modules\Payment\Models\PaymentMapper;
 use Modules\Payment\Models\PaymentStatus;
 use phpOMS\Autoloader;
+use phpOMS\Localization\ISO4217CharEnum;
+use phpOMS\Localization\ISO4217SymbolEnum;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\RequestAbstract;
@@ -54,26 +58,38 @@ final class ApiController extends Controller
      */
     public function apiSchemaCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
+        $schema = $this->buildSchema(new NullItem());
+
+        $response->header->set('Content-Type', MimeType::M_JSON . '; charset=utf-8', true);
+        $response->set($request->uri->__toString(), $schema);
+    }
+
+    public function buildSchema(Item $item) : array
+    {
+        $images = $item->getFilesByTypeName('shop_primary_image');
+
         // @todo: implement https://schema.org/Product
         $schema = [
             '@context' => 'https://schema.org/',
             '@type' => 'Product',
-            'name' => '...',
+            'name' => $item->getL11n('name1')->description,
+            'description' => $item->getL11n('description_short')->description,
             'image' => [
-
             ],
-            'description' => '...',
             'offers' => [
                 '@type' => 'Offer',
-                'priceCurrency' => '...',
-                'price' => '...',
-                'availability' => '...',
+                'priceCurrency' => ISO4217CharEnum::_EUR,
+                'price' => $item->salesPrice->getAmount(),
+                'availability' => 'http://schema.org/InStock',
             ],
-            'isVariantOf' => '...',
+            //'isVariantOf' => '...',
         ];
 
-        $response->header->set('Content-Type', MimeType::M_JSON . '; charset=utf-8', true);
-        $response->set($request->uri->__toString(), $schema);
+        foreach ($images as $image) {
+            $schema['image'][] = $image->getPath();
+        }
+
+        return $schema;
     }
 
     /**
