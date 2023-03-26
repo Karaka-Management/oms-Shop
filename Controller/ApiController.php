@@ -14,22 +14,35 @@ declare(strict_types=1);
 
 namespace Modules\Shop\Controller;
 
+use Modules\Admin\Models\NullAccount;
 use Modules\Billing\Models\Attribute\BillAttributeTypeMapper;
 use Modules\Billing\Models\Bill;
+use Modules\Billing\Models\BillElement;
+use Modules\Billing\Models\BillMapper;
+use Modules\Billing\Models\BillStatus;
+use Modules\Billing\Models\BillType;
+use Modules\Billing\Models\BillTypeMapper;
+use Modules\Billing\Models\NullBillType;
+use Modules\Billing\Models\Tax\TaxCombinationMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
+use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
+use Modules\ItemManagement\Models\ItemStatus;
 use Modules\ItemManagement\Models\NullItem;
 use Modules\Payment\Models\PaymentMapper;
 use Modules\Payment\Models\PaymentStatus;
 use phpOMS\Autoloader;
+use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Localization\ISO4217SymbolEnum;
+use phpOMS\Localization\ISO639x1Enum;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
+use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\System\MimeType;
 use phpOMS\Uri\HttpUri;
 
@@ -107,18 +120,12 @@ final class ApiController extends Controller
      */
     public function apiOneClickBuy(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
-        $item = $request->hasData('item')
-            ? ItemMapper::get()->where('id', (int) $request->getData('item'))->execute()
-            : ItemMapper::get()->where('number', (string) $request->getData('number'))->execute();
+        // one-click-shoping-cart = invoice
 
-        // get item
-        // get client
-            // get client data
-            // get payment data
-        // create one-click-shoping-cart = invoice
-        // create payment based on client data
-
+        /** @var \Modules\ClientManagement\Models\Client */
         $client = ClientMapper::get()
+            ->with('mainAddress')
+            ->with('account')
             ->where('account', $request->header->account)
             ->execute();
 
@@ -134,14 +141,42 @@ final class ApiController extends Controller
             $paymentInfo = $paymentInfoMapper->execute();
         }
 
-        $bill = new Bill();
+        $bill = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBill($client, $request);
 
-        // add item to bill
-        // set quantity
-        // set price
-        // attach payment to bill
-        // set external payment id to bill
-        // execute bill payment
+        $bill->type = BillTypeMapper::get()
+            ->with('l11n')
+            ->where('name', 'sales_invoice')
+            ->where('l11n/language', $bill->getLanguage())
+            ->execute();
+
+        $itemMapper = ItemMapper::get()
+            ->with('l11n')
+            ->with('l11n/type')
+            ->where('status', ItemStatus::ACTIVE)
+            ->where('l11n/language', $bill->getLanguage());
+
+        /** @var \Modules\ItemManagement\Models\Item */
+        $item = $request->hasData('item')
+            ? $itemMapper->where('id', $request->getDataInt('item'))->execute()
+            : $itemMapper->where('number', $request->getDataString('number'))->execute();
+
+        /** @var \Modules\Billing\Models\Tax\TaxCombination $taxCombination */
+        $taxCombination = TaxCombinationMapper::get()
+            ->where('itemCode', $item->getAttribute('sales_tax_code')?->value->getValue())
+            ->where('clientCode', $client->getAttribute('sales_tax_code')?->value->getValue())
+            ->execute();
+        
+        /** @var \Modules\Finance\Models\TaxCode $taxCode */
+        $taxCode = TaxCodeMapper::get()
+            ->where('abbr', $taxCombination->taxCode)
+            ->execute();
+
+        $billElement = BillElement::fromItem($item, $taxCode);
+        $billElement->quantity = 1;
+
+        $bill->addElement($billElement);
+
+        $this->app->moduleManager->get('Billing', 'ApiBill')->createBillDatabaseEntry($bill, $request);
 
         $this->setupStripe($request, $response, $bill, $data);
     }
@@ -156,7 +191,9 @@ final class ApiController extends Controller
 
         // Assign payment id to bill
         /** \Modules\Billing\Models\Attribute\BillAttributeType $type */
-        $type = BillAttributeTypeMapper::get()->where('name', 'external_payment_id')->execute();
+        $type = BillAttributeTypeMapper::get()
+            ->where('name', 'external_payment_id')
+            ->execute();
 
         $internalRequest = new HttpRequest(new HttpUri(''));
         $internalResponse = new HttpResponse();
@@ -200,29 +237,15 @@ final class ApiController extends Controller
         \Stripe\Stripe::setApiKey($api_key);
 
         $session = \Stripe\Checkout\Session::create([
-            'line_items' => [[
-                'amount_subtotal' => '...',
-                'amount_tax' => '...',
-                'amount_total' => '...',
-                'quantity' => 1,
-                'price_data' => [
-                    'name' => '',
-                    'metadata' => [
-                        'pro_id' => 0,
-                    ]
-                ],
-                'unit_amount' => 0,
-                'currency' => 0,
-            ]],
-            'amount_subtotal' => '...',
-            'amount_total' => '...',
+            'amount_subtotal' => $bill->netSales->getInt(),
+            'amount_total' => $bill->grossSales->getInt(),
             'mode' => 'payment',
-            'currency' => '...',
+            'currency' => $bill->getCurrency(),
             'success_url' => $success,
             'cancel_url' => $cancel,
-            'client_reference_id' => '...',
-            'customer' => 'stripe_customer_id...',
-            'customer_email' => 'customer_email...',
+            'client_reference_id' => $bill->number,
+            //'customer' => '...', @todo: use existing customer external_id
+            'customer_email' => $bill->client->account->getEmail(), // @todo: consider to use contacts
         ]);
 
         return $session;
