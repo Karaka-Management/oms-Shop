@@ -16,6 +16,7 @@ namespace Modules\Shop\Controller;
 
 use Modules\Billing\Models\Attribute\BillAttributeTypeMapper;
 use Modules\Billing\Models\Bill;
+use Modules\Billing\Models\BillMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
 use Modules\ItemManagement\Models\Item;
@@ -25,9 +26,9 @@ use Modules\Payment\Models\PaymentMapper;
 use Modules\Payment\Models\PaymentStatus;
 use phpOMS\Autoloader;
 use phpOMS\Localization\ISO4217CharEnum;
-use phpOMS\Localization\ISO4217SymbolEnum;
 use phpOMS\Message\Http\HttpRequest;
 use phpOMS\Message\Http\HttpResponse;
+use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\System\MimeType;
@@ -58,13 +59,13 @@ final class ApiController extends Controller
      */
     public function apiSchemaCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
-        $schema = $this->buildSchema(new NullItem());
+        $schema = $this->buildSchema(new NullItem(), $request);
 
         $response->header->set('Content-Type', MimeType::M_JSON . '; charset=utf-8', true);
         $response->set($request->uri->__toString(), $schema);
     }
 
-    public function buildSchema(Item $item) : array
+    public function buildSchema(Item $item, RequestAbstract $request) : array
     {
         $images = $item->getFilesByTypeName('shop_primary_image');
 
@@ -86,7 +87,7 @@ final class ApiController extends Controller
         ];
 
         foreach ($images as $image) {
-            $schema['image'][] = $image->getPath();
+            $schema['image'][] = $request->uri->getBase() . '/' . $image->getPath();
         }
 
         return $schema;
@@ -107,18 +108,12 @@ final class ApiController extends Controller
      */
     public function apiOneClickBuy(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
-        $item = $request->hasData('item')
-            ? ItemMapper::get()->where('id', (int) $request->getData('item'))->execute()
-            : ItemMapper::get()->where('number', (string) $request->getData('number'))->execute();
-
-        // get item
-        // get client
-            // get client data
-            // get payment data
-        // create one-click-shoping-cart = invoice
-        // create payment based on client data
-
         $client = ClientMapper::get()
+            ->with('mainAddress')
+            ->with('attributes')
+            ->with('attributes/type')
+            ->with('attributes/value')
+            ->with('account')
             ->where('account', $request->header->account)
             ->execute();
 
@@ -134,15 +129,34 @@ final class ApiController extends Controller
             $paymentInfo = $paymentInfoMapper->execute();
         }
 
-        $bill = new Bill();
+        $request->setData('client', $client->getId(), true);
+        $bill = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBill($client, $request);
 
-        // add item to bill
-        // set quantity
-        // set price
-        // attach payment to bill
-        // set external payment id to bill
-        // execute bill payment
+        $itemMapper = $request->hasData('item')
+            ? ItemMapper::get()
+                ->where('id', (int) $request->getData('item'))
+            : ItemMapper::get()
+                ->where('number', (string) $request->getData('number'));
 
+        $itemMapper->with('l11n')
+            ->with('attributes')
+            ->with('attributes/type')
+            ->with('attributes/value')
+            ->with('l11n/type')
+            ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
+            ->where('l11n/language', $bill->getLanguage())
+            ->execute();
+
+        $item = $itemMapper->execute();
+
+        // @todo: consider to first create an offer = cart and only when paid turn it into an invoice. This way it's also easy to analyse the conversion rate.
+
+        $billElement = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBillElement($client, $item, $bill, $request);
+        $bill->addElement($billElement);
+
+        $this->app->moduleManager->get('Billing', 'ApiBill')->createBillDatabaseEntry($bill, $request);
+
+        // @tood: make this configurable (either from the customer payment info or some item default setting)!!!
         $this->setupStripe($request, $response, $bill, $data);
     }
 
@@ -168,8 +182,8 @@ final class ApiController extends Controller
         $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeCreate($internalRequest, $internalResponse, $data);
 
         // Redirect to stripe checkout page
+        $response->header->status = RequestStatusCode::R_303;
         $response->header->set('Content-Type', MimeType::M_JSON, true);
-        $response->header->set('', 'HTTP/1.1 303 See Other', true);
         $response->header->set('Location', $session->url, true);
     }
 
@@ -188,7 +202,7 @@ final class ApiController extends Controller
         $api_key         = $_SERVER['OMS_STRIPE_SECRET'] ?? '';
         $endpoint_secret = $_SERVER['OMS_STRIPE_PUBLIC'] ?? '';
 
-        $include = \realpath(__DIR__ . '/../../../Resources/');
+        $include = \realpath(__DIR__ . '/../../../Resources/Stripe');
 
         if (empty($api_key) || empty($endpoint_secret) || $include === false) {
             return null;
@@ -196,34 +210,42 @@ final class ApiController extends Controller
 
         Autoloader::addPath($include);
 
+        $stripeData = [
+            'line_items' => [],
+            'mode' => 'payment',
+            'currency' => $bill->getCurrency(),
+            'success_url' => $success,
+            'cancel_url' => $cancel,
+            'client_reference_id' => $bill->number,
+           // 'customer' => 'stripe_customer_id...',
+            'customer_email' => $bill->client->account->getEmail(),
+        ];
+
+        $elements = $bill->getElements();
+        foreach ($elements as $element) {
+            $stripeData['line_items'][] = [
+                'quantity' => 1,
+                'price_data' => [
+                    'tax_behavior' => 'inclusive',
+                    'currency' => $bill->getCurrency(),
+                    'unit_amount' => (int) ($element->totalSalesPriceGross->getInt() / 100),
+                    //'amount_subtotal' => (int) ($bill->netSales->getInt() / 100),
+                    //'amount_total' => (int) ($bill->grossSales->getInt() / 100),
+                    'product_data' => [
+                        'name' => $element->itemName,
+                        'metadata' => [
+                            'pro_id' => $element->itemNumber,
+                        ],
+                    ],
+                ]
+            ];
+        }
+
         //$stripe = new \Stripe\StripeClient($api_key);
         \Stripe\Stripe::setApiKey($api_key);
 
-        $session = \Stripe\Checkout\Session::create([
-            'line_items' => [[
-                'amount_subtotal' => '...',
-                'amount_tax' => '...',
-                'amount_total' => '...',
-                'quantity' => 1,
-                'price_data' => [
-                    'name' => '',
-                    'metadata' => [
-                        'pro_id' => 0,
-                    ]
-                ],
-                'unit_amount' => 0,
-                'currency' => 0,
-            ]],
-            'amount_subtotal' => '...',
-            'amount_total' => '...',
-            'mode' => 'payment',
-            'currency' => '...',
-            'success_url' => $success,
-            'cancel_url' => $cancel,
-            'client_reference_id' => '...',
-            'customer' => 'stripe_customer_id...',
-            'customer_email' => 'customer_email...',
-        ]);
+        // @todo: instead of using account email, use client billing email if defined and only use account email as fallback
+        $session = \Stripe\Checkout\Session::create($stripeData);
 
         return $session;
     }

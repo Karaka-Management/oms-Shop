@@ -153,17 +153,13 @@ final class Application
 
         if (!($account instanceof NullAccount)) {
             $response->header->l11n = $account->l11n;
-        } elseif ($this->app->sessionManager->get('language') !== null) {
+        } elseif ($this->app->sessionManager->get('language') !== null
+            && $response->header->l11n->getLanguage() !== $this->app->sessionManager->get('language')
+        ) {
             $response->header->l11n
                 ->loadFromLanguage(
                     $this->app->sessionManager->get('language'),
                     $this->app->sessionManager->get('country') ?? '*'
-                );
-        } elseif ($this->app->cookieJar->get('language') !== null) {
-            $response->header->l11n
-                ->loadFromLanguage(
-                    $this->app->cookieJar->get('language'),
-                    $this->app->cookieJar->get('country') ?? '*'
                 );
         }
 
@@ -212,7 +208,7 @@ final class Application
                 $request->uri->getRoute(),
                 $request->getDataString('CSRF'),
                 $request->getRouteVerb(),
-                $this->app->appName,
+                $this->app->appId,
                 $this->app->unitId,
                 $account,
                 $request->getData()
