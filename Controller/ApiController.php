@@ -16,7 +16,6 @@ namespace Modules\Shop\Controller;
 
 use Modules\Billing\Models\Attribute\BillAttributeTypeMapper;
 use Modules\Billing\Models\Bill;
-use Modules\Billing\Models\BillMapper;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
 use Modules\ItemManagement\Models\Item;
@@ -65,6 +64,16 @@ final class ApiController extends Controller
         $response->set($request->uri->__toString(), $schema);
     }
 
+    /**
+     * Method to create a schema from an item
+     *
+     * @param Item            $item    Item to create the schema from
+     * @param RequestAbstract $request Request
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
     public function buildSchema(Item $item, RequestAbstract $request) : array
     {
         $images = $item->getFilesByTypeName('shop_primary_image');
@@ -108,6 +117,7 @@ final class ApiController extends Controller
      */
     public function apiOneClickBuy(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
     {
+        /** @var \Modules\ClientManagement\Models\Client $client */
         $client = ClientMapper::get()
             ->with('mainAddress')
             ->with('attributes')
@@ -144,9 +154,9 @@ final class ApiController extends Controller
             ->with('attributes/value')
             ->with('l11n/type')
             ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
-            ->where('l11n/language', $bill->getLanguage())
-            ->execute();
+            ->where('l11n/language', $bill->getLanguage());
 
+        /** @var \Modules\ItemManagement\Models\Item $item */
         $item = $itemMapper->execute();
 
         // @todo: consider to first create an offer = cart and only when paid turn it into an invoice. This way it's also easy to analyse the conversion rate.
@@ -160,19 +170,34 @@ final class ApiController extends Controller
         $this->setupStripe($request, $response, $bill, $data);
     }
 
+    /**
+     * Create stripe checkout response
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param Bill             $bill     Bill
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     private function setupStripe(
         RequestAbstract $request,
         ResponseAbstract $response,
         Bill $bill,
         mixed $data = null
-    ) : void {
+    ) : void
+    {
         $session = $this->createStripeSession($bill, $data['success'], $data['cancel']);
 
         // Assign payment id to bill
         /** \Modules\Billing\Models\Attribute\BillAttributeType $type */
-        $type = BillAttributeTypeMapper::get()->where('name', 'external_payment_id')->execute();
+        $type = BillAttributeTypeMapper::get()
+            ->where('name', 'external_payment_id')
+            ->execute();
 
-        $internalRequest = new HttpRequest(new HttpUri(''));
+        $internalRequest  = new HttpRequest(new HttpUri(''));
         $internalResponse = new HttpResponse();
 
         $internalRequest->header->account = $request->header->account;
@@ -187,11 +212,23 @@ final class ApiController extends Controller
         $response->header->set('Location', $session->url, true);
     }
 
+    /**
+     * Create stripe session
+     *
+     * @param Bill   $bill    Bill
+     * @param string $success Success url
+     * @param string $cancel  Cancel url
+     *
+     * @return \Stripe\Checkout\Session|null
+     *
+     * @since 1.0.0
+     */
     private function createStripeSession(
         Bill $bill,
         string $success,
         string $cancel
-    ) {
+    ) : ?\Stripe\Checkout\Session
+    {
         // $this->app->appSettings->getEncrypted()
 
         // $stripeSecretKeyTemp = $this->app->appSettings->get();
