@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace Modules\Shop\Controller;
 
-use Modules\Billing\Models\Attribute\BillAttributeTypeMapper;
-use Modules\Billing\Models\Bill;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
 use Modules\ItemManagement\Models\Item;
@@ -141,6 +139,9 @@ final class ApiController extends Controller
 
         $request->setData('client', $client->getId(), true);
         $bill = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBill($client, $request);
+        $this->app->moduleManager->get('Billing', 'ApiBill')->createBillDatabaseEntry($bill, $request);
+
+        $old = clone $bill;
 
         $itemMapper = $request->hasData('item')
             ? ItemMapper::get()
@@ -164,126 +165,9 @@ final class ApiController extends Controller
         $billElement = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBillElement($client, $item, $bill, $request);
         $bill->addElement($billElement);
 
-        $this->app->moduleManager->get('Billing', 'ApiBill')->createBillDatabaseEntry($bill, $request);
+        $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill_element', $request->getOrigin());
 
         // @tood: make this configurable (either from the customer payment info or some item default setting)!!!
-        $this->setupStripe($request, $response, $bill, $data);
-    }
-
-    /**
-     * Create stripe checkout response
-     *
-     * @param RequestAbstract  $request  Request
-     * @param ResponseAbstract $response Response
-     * @param Bill             $bill     Bill
-     * @param mixed            $data     Generic data
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    private function setupStripe(
-        RequestAbstract $request,
-        ResponseAbstract $response,
-        Bill $bill,
-        mixed $data = null
-    ) : void
-    {
-        $session = $this->createStripeSession($bill, $data['success'], $data['cancel']);
-
-        // Assign payment id to bill
-        /** \Modules\Billing\Models\Attribute\BillAttributeType $type */
-        $type = BillAttributeTypeMapper::get()
-            ->where('name', 'external_payment_id')
-            ->execute();
-
-        $internalRequest  = new HttpRequest(new HttpUri(''));
-        $internalResponse = new HttpResponse();
-
-        $internalRequest->header->account = $request->header->account;
-        $internalRequest->setData('type', $type->getId());
-        $internalRequest->setData('custom', (string) $session->id);
-        $internalRequest->setData('bill', $bill->getId());
-        $this->app->moduleManager->get('Billing', 'ApiAttribute')->apiBillAttributeCreate($internalRequest, $internalResponse, $data);
-
-        // Redirect to stripe checkout page
-        $response->header->status = RequestStatusCode::R_303;
-        $response->header->set('Content-Type', MimeType::M_JSON, true);
-        $response->header->set('Location', $session->url, true);
-    }
-
-    /**
-     * Create stripe session
-     *
-     * @param Bill   $bill    Bill
-     * @param string $success Success url
-     * @param string $cancel  Cancel url
-     *
-     * @return \Stripe\Checkout\Session|null
-     *
-     * @since 1.0.0
-     */
-    private function createStripeSession(
-        Bill $bill,
-        string $success,
-        string $cancel
-    ) : ?\Stripe\Checkout\Session
-    {
-        // $this->app->appSettings->getEncrypted()
-
-        // $stripeSecretKeyTemp = $this->app->appSettings->get();
-        // $stripeSecretKey = $this->app->appSettings->decrypt($stripeSecretKeyTemp);
-
-        // \Stripe\Stripe::setApiKey($stripeSecretKey);
-
-        $api_key         = $_SERVER['OMS_STRIPE_SECRET'] ?? '';
-        $endpoint_secret = $_SERVER['OMS_STRIPE_PUBLIC'] ?? '';
-
-        $include = \realpath(__DIR__ . '/../../../Resources/Stripe');
-
-        if (empty($api_key) || empty($endpoint_secret) || $include === false) {
-            return null;
-        }
-
-        Autoloader::addPath($include);
-
-        $stripeData = [
-            'line_items' => [],
-            'mode' => 'payment',
-            'currency' => $bill->getCurrency(),
-            'success_url' => $success,
-            'cancel_url' => $cancel,
-            'client_reference_id' => $bill->number,
-           // 'customer' => 'stripe_customer_id...',
-            'customer_email' => $bill->client->account->getEmail(),
-        ];
-
-        $elements = $bill->getElements();
-        foreach ($elements as $element) {
-            $stripeData['line_items'][] = [
-                'quantity' => 1,
-                'price_data' => [
-                    'tax_behavior' => 'inclusive',
-                    'currency' => $bill->getCurrency(),
-                    'unit_amount' => (int) ($element->totalSalesPriceGross->getInt() / 100),
-                    //'amount_subtotal' => (int) ($bill->netSales->getInt() / 100),
-                    //'amount_total' => (int) ($bill->grossSales->getInt() / 100),
-                    'product_data' => [
-                        'name' => $element->itemName,
-                        'metadata' => [
-                            'pro_id' => $element->itemNumber,
-                        ],
-                    ],
-                ]
-            ];
-        }
-
-        //$stripe = new \Stripe\StripeClient($api_key);
-        \Stripe\Stripe::setApiKey($api_key);
-
-        // @todo: instead of using account email, use client billing email if defined and only use account email as fallback
-        $session = \Stripe\Checkout\Session::create($stripeData);
-
-        return $session;
+        $this->app->moduleManager->get('Payment', 'Api')->setupStripe($request, $response, $bill, $data);
     }
 }
