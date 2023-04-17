@@ -22,7 +22,8 @@
     },
     "providing": {
         "CMS": "*",
-        "Media": "*"
+        "Media": "*",
+        "Payment": "*"
     },
     "load": [
         {
