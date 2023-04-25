@@ -18,7 +18,10 @@
     "directory": "Shop",
     "dependencies": {
         "Admin": "1.0.0",
-        "CMS": "1.0.0"
+        "CMS": "1.0.0",
+        "Media": "1.0.0",
+        "Billing": "1.0.0",
+        "ItemManagement": "1.0.0"
     },
     "providing": {
         "CMS": "*",

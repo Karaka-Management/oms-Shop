@@ -14,26 +14,19 @@ declare(strict_types=1);
 
 namespace Modules\Shop\Controller;
 
+use Modules\Billing\Models\BillMapper;
+use Modules\Billing\Models\BillStatus;
 use Modules\ClientManagement\Models\ClientMapper;
 use Modules\ClientManagement\Models\NullClient;
-use Modules\Finance\Models\TaxCodeMapper;
 use Modules\ItemManagement\Models\Item;
 use Modules\ItemManagement\Models\ItemMapper;
-use Modules\ItemManagement\Models\ItemStatus;
 use Modules\ItemManagement\Models\NullItem;
 use Modules\Payment\Models\PaymentMapper;
 use Modules\Payment\Models\PaymentStatus;
-use phpOMS\Autoloader;
-use phpOMS\Localization\ISO3166TwoEnum;
 use phpOMS\Localization\ISO4217CharEnum;
-use phpOMS\Message\Http\HttpRequest;
-use phpOMS\Message\Http\HttpResponse;
-use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
-use phpOMS\Stdlib\Base\FloatInt;
 use phpOMS\System\MimeType;
-use phpOMS\Uri\HttpUri;
 
 /**
  * Api controller
@@ -45,6 +38,88 @@ use phpOMS\Uri\HttpUri;
  */
 final class ApiController extends Controller
 {
+        /**
+     * Api method to download item files
+     *
+     * @param RequestAbstract  $request  Request
+     * @param ResponseAbstract $response Response
+     * @param mixed            $data     Generic data
+     *
+     * @return void
+     *
+     * @api
+     *
+     * @since 1.0.0
+     */
+    public function apiItemFileDownload(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    {
+        // Handle public files
+        $item = ItemMapper::get()
+            ->with('files')
+            ->with('files/type')
+            ->where('id', $request->getDataInt('item'))
+            ->execute();
+
+        $itemFiles = $item->getFiles();
+        foreach ($itemFiles as $file) {
+            if ($file->getId() === $request->getDataInt('id')
+                && ($file->hasMediaTypeName('item_demo_download')
+                    || $file->hasMediaTypeName('item_public_download'))
+            ) {
+                $this->app->moduleManager->get('Media', 'Api')
+                    ->apiMediaExport($request, $response);
+
+                return;
+            }
+        }
+
+        // Handle private files
+        // @todo: this is another example where it would be useful to have clients and items as models in the bill and bill element
+        $client = ClientMapper::get()
+            ->where('account', $request->header->account)
+            ->execute();
+
+        // @todo: only for sales invoice, currently also for offers
+        $bills = BillMapper::getAll()
+            ->with('elements')
+            ->where('client', $client->getId())
+            ->where('status', BillStatus::ARCHIVED)
+            ->where('elements/item', $request->getDataInt('item'))
+            ->execute();
+
+        $items = [];
+        foreach ($bills as $bill) {
+            $elements = $bill->getElements();
+
+            foreach ($elements as $element) {
+                $item = ItemMapper::get()
+                    ->with('files')
+                    ->with('files/type')
+                    ->where('id', $element->item)
+                    ->execute();
+
+                $items[$item->getId()] = $item;
+            }
+        }
+
+        foreach ($items as $item) {
+            $files = $item->getFiles();
+
+            foreach ($files as $file) {
+                if ($file->getId() === $request->getDataInt('id')
+                    && $file->hasMediaTypeName('item_purchase_download')
+                ) {
+                    $this->app->moduleManager->get('Media', 'Api')
+                        ->apiMediaExport($request, $response);
+
+                    return;
+                }
+            }
+        }
+
+        // @todo: return insufficient permissions or 404
+    }
+    
     /**
      * Api method to create news article
      *

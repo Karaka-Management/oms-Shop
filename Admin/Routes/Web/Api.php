@@ -29,4 +29,12 @@ return [
             ],
         ],
     ],
+    '^.*/shop/media/download.*$' => [
+        [
+            'dest'       => '\Modules\Shop\Controller\ApiController:apiItemFileDownload',
+            'verb'       => RouteVerb::GET,
+            'permission' => [
+            ],
+        ],
+    ],
 ];
