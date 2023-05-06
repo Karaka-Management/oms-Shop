@@ -24,6 +24,8 @@ use Modules\ItemManagement\Models\NullItem;
 use Modules\Payment\Models\PaymentMapper;
 use Modules\Payment\Models\PaymentStatus;
 use phpOMS\Localization\ISO4217CharEnum;
+use phpOMS\Message\Http\RequestStatusCode;
+use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\System\MimeType;
@@ -38,7 +40,7 @@ use phpOMS\System\MimeType;
  */
 final class ApiController extends Controller
 {
-        /**
+    /**
      * Api method to download item files
      *
      * @param RequestAbstract  $request  Request
@@ -56,18 +58,18 @@ final class ApiController extends Controller
         // Handle public files
         $item = ItemMapper::get()
             ->with('files')
-            ->with('files/type')
+            ->with('files/types')
             ->where('id', $request->getDataInt('item'))
             ->execute();
 
         $itemFiles = $item->getFiles();
         foreach ($itemFiles as $file) {
-            if ($file->getId() === $request->getDataInt('id')
+            if ($file->id === $request->getDataInt('id')
                 && ($file->hasMediaTypeName('item_demo_download')
                     || $file->hasMediaTypeName('item_public_download'))
             ) {
                 $this->app->moduleManager->get('Media', 'Api')
-                    ->apiMediaExport($request, $response);
+                    ->apiMediaExport($request, $response, ['ignorePermission' => true]);
 
                 return;
             }
@@ -82,7 +84,7 @@ final class ApiController extends Controller
         // @todo: only for sales invoice, currently also for offers
         $bills = BillMapper::getAll()
             ->with('elements')
-            ->where('client', $client->getId())
+            ->where('client', $client->id)
             ->where('status', BillStatus::ARCHIVED)
             ->where('elements/item', $request->getDataInt('item'))
             ->execute();
@@ -98,7 +100,7 @@ final class ApiController extends Controller
                     ->where('id', $element->item)
                     ->execute();
 
-                $items[$item->getId()] = $item;
+                $items[$item->id] = $item;
             }
         }
 
@@ -106,20 +108,21 @@ final class ApiController extends Controller
             $files = $item->getFiles();
 
             foreach ($files as $file) {
-                if ($file->getId() === $request->getDataInt('id')
+                if ($file->id === $request->getDataInt('id')
                     && $file->hasMediaTypeName('item_purchase_download')
                 ) {
                     $this->app->moduleManager->get('Media', 'Api')
-                        ->apiMediaExport($request, $response);
+                        ->apiMediaExport($request, $response, ['ignorePermission' => true]);
 
                     return;
                 }
             }
         }
 
-        // @todo: return insufficient permissions or 404
+        $this->fillJsonResponse($request, $response, NotificationLevel::ERROR, '', '', []);
+        $response->header->status = RequestStatusCode::R_403;
     }
-    
+
     /**
      * Api method to create news article
      *
@@ -204,7 +207,7 @@ final class ApiController extends Controller
             ->where('account', $request->header->account)
             ->execute();
 
-        if (!($client instanceof NullClient)) {
+        if ($client->id > 0) {
             $paymentInfoMapper = PaymentMapper::getAll()
                 ->where('account', $request->header->account)
                 ->where('status', PaymentStatus::ACTIVATE);
@@ -216,7 +219,7 @@ final class ApiController extends Controller
             $paymentInfo = $paymentInfoMapper->execute();
         }
 
-        $request->setData('client', $client->getId(), true);
+        $request->setData('client', $client->id, true);
         $bill = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBill($client, $request);
         $this->app->moduleManager->get('Billing', 'ApiBill')->createBillDatabaseEntry($bill, $request);
 
@@ -247,6 +250,11 @@ final class ApiController extends Controller
         $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill_element', $request->getOrigin());
 
         // @tood: make this configurable (either from the customer payment info or some item default setting)!!!
-        $this->app->moduleManager->get('Payment', 'Api')->setupStripe($request, $response, $bill, $data);
+        if ($item->getAttribute('subscription')->value->getValue() === 1) {
+            $response->header->status = RequestStatusCode::R_303;
+            $response->header->set('Location', $item->getAttribute('one_click_pay_cc')->value->getValue(), true);
+        } else {
+            $this->app->moduleManager->get('Payment', 'Api')->setupStripe($request, $response, $bill, $data);
+        }
     }
 }

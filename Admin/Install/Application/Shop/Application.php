@@ -151,7 +151,7 @@ final class Application
 
         $account = $this->loadAccount($request);
 
-        if (!($account instanceof NullAccount)) {
+        if ($account->id > 0) {
             $response->header->l11n = $account->l11n;
         } elseif ($this->app->sessionManager->get('language') !== null
             && $response->header->l11n->getLanguage() !== $this->app->sessionManager->get('language')
@@ -161,6 +161,8 @@ final class Application
                     $this->app->sessionManager->get('language'),
                     $this->app->sessionManager->get('country') ?? '*'
                 );
+        } else {
+            $this->app->setResponseLanguage($request, $response, $this->config);
         }
 
         if (!\in_array($response->getLanguage(), $this->config['language'])) {
