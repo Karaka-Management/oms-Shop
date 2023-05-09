@@ -162,8 +162,8 @@ final class ApiController extends Controller
         $schema = [
             '@context' => 'https://schema.org/',
             '@type' => 'Product',
-            'name' => $item->getL11n('name1')->description,
-            'description' => $item->getL11n('description_short')->description,
+            'name' => $item->getL11n('name1')->content,
+            'description' => $item->getL11n('description_short')->content,
             'image' => [
             ],
             'offers' => [
