@@ -159,17 +159,17 @@ final class ApiController extends Controller
 
         // @todo: implement https://schema.org/Product
         $schema = [
-            '@context' => 'https://schema.org/',
-            '@type' => 'Product',
-            'name' => $item->getL11n('name1')->content,
+            '@context'    => 'https://schema.org/',
+            '@type'       => 'Product',
+            'name'        => $item->getL11n('name1')->content,
             'description' => $item->getL11n('description_short')->content,
-            'image' => [
+            'image'       => [
             ],
             'offers' => [
-                '@type' => 'Offer',
+                '@type'         => 'Offer',
                 'priceCurrency' => ISO4217CharEnum::_EUR,
-                'price' => $item->salesPrice->getAmount(),
-                'availability' => 'http://schema.org/InStock',
+                'price'         => $item->salesPrice->getAmount(),
+                'availability'  => 'http://schema.org/InStock',
             ],
             //'isVariantOf' => '...',
         ];
