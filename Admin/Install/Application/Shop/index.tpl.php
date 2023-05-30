@@ -16,7 +16,7 @@ declare(strict_types=1);
 use phpOMS\Uri\UriFactory;
 
 /** @var phpOMS\Model\Html\Head $head */
-$head = $this->getData('head');
+$head = $this->head;
 
 /** @var array $dispatch */
 $dispatch = $this->getData('dispatch') ?? [];
