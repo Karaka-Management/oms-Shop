@@ -22,7 +22,7 @@ $head = $this->getData('head');
 $dispatch = $this->getData('dispatch') ?? [];
 ?>
 <!DOCTYPE HTML>
-<html lang="<?= $this->printHtml($this->response->getLanguage()); ?>">
+<html lang="<?= $this->printHtml($this->response->header->l11n->language); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

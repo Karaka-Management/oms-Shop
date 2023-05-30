@@ -236,7 +236,7 @@ final class ApiController extends Controller
             ->with('attributes/value')
             ->with('l11n/type')
             ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
-            ->where('l11n/language', $bill->getLanguage());
+            ->where('l11n/language', $bill->language);
 
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = $itemMapper->execute();
