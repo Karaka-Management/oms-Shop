@@ -61,7 +61,7 @@ final class ApiController extends Controller
             ->where('id', $request->getDataInt('item'))
             ->execute();
 
-        $itemFiles = $item->getFiles();
+        $itemFiles = $item->files;
         foreach ($itemFiles as $file) {
             if ($file->id === $request->getDataInt('id')
                 && ($file->hasMediaTypeName('item_demo_download')
@@ -104,7 +104,7 @@ final class ApiController extends Controller
         }
 
         foreach ($items as $item) {
-            $files = $item->getFiles();
+            $files = $item->files;
 
             foreach ($files as $file) {
                 if ($file->id === $request->getDataInt('id')
@@ -236,7 +236,7 @@ final class ApiController extends Controller
             ->with('attributes/value')
             ->with('l11n/type')
             ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
-            ->where('l11n/language', $bill->getLanguage());
+            ->where('l11n/language', $bill->language);
 
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = $itemMapper->execute();
