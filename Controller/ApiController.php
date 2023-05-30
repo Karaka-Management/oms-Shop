@@ -61,7 +61,7 @@ final class ApiController extends Controller
             ->where('id', $request->getDataInt('item'))
             ->execute();
 
-        $itemFiles = $item->getFiles();
+        $itemFiles = $item->files;
         foreach ($itemFiles as $file) {
             if ($file->id === $request->getDataInt('id')
                 && ($file->hasMediaTypeName('item_demo_download')
@@ -104,7 +104,7 @@ final class ApiController extends Controller
         }
 
         foreach ($items as $item) {
-            $files = $item->getFiles();
+            $files = $item->files;
 
             foreach ($files as $file) {
                 if ($file->id === $request->getDataInt('id')
