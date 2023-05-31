@@ -173,7 +173,7 @@ final class Application
         $head     = new Head();
 
         $pageView->setData('unitId', $this->app->unitId);
-        $pageView->data['head'] = $head;
+        $pageView->head = $head;
         $response->set('Content', $pageView);
 
         /* App only allows GET */
