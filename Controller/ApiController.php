@@ -24,7 +24,6 @@ use Modules\Payment\Models\PaymentMapper;
 use Modules\Payment\Models\PaymentStatus;
 use phpOMS\Localization\ISO4217CharEnum;
 use phpOMS\Message\Http\RequestStatusCode;
-use phpOMS\Message\NotificationLevel;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
 use phpOMS\System\MimeType;
@@ -122,8 +121,8 @@ final class ApiController extends Controller
             }
         }
 
-        $this->fillJsonResponse($request, $response, NotificationLevel::ERROR, '', '', []);
         $response->header->status = RequestStatusCode::R_403;
+        $this->createInvalidReturnResponse($request, $response, $item);
     }
 
     /**
