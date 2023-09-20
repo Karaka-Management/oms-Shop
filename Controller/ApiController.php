@@ -237,6 +237,16 @@ final class ApiController extends Controller
             $internalRequest->setData('unit', $request->getDataInt('unit'));
 
             $this->app->moduleManager->get('ClientManagement', 'Api')->apiClientCreate($internalRequest, $internalResponse);
+
+            /** @var \Modules\ClientManagement\Models\Client $client */
+            $client = ClientMapper::get()
+                ->with('mainAddress')
+                ->with('attributes')
+                ->with('attributes/type')
+                ->with('attributes/value')
+                ->with('account')
+                ->where('account', $request->header->account)
+                ->execute();
         }
 
         $paymentInfoMapper = PaymentMapper::getAll()
