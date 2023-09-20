@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Modules\Shop\Controller;
 
+use Modules\Admin\Models\AccountMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\ClientManagement\Models\ClientMapper;
@@ -23,6 +24,8 @@ use Modules\ItemManagement\Models\NullItem;
 use Modules\Payment\Models\PaymentMapper;
 use Modules\Payment\Models\PaymentStatus;
 use phpOMS\Localization\ISO4217CharEnum;
+use phpOMS\Message\Http\HttpRequest;
+use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
@@ -209,17 +212,42 @@ final class ApiController extends Controller
             ->where('account', $request->header->account)
             ->execute();
 
-        if ($client->id > 0) {
-            $paymentInfoMapper = PaymentMapper::getAll()
-                ->where('account', $request->header->account)
-                ->where('status', PaymentStatus::ACTIVATE);
+        // Create client if no client created for this account
+        if ($client->id === 0) {
+            $account = AccountMapper::get()
+                ->with('locations')
+                ->where('id', $request->header->account)
+                ->execute();
 
-            if ($request->hasData('payment_types')) {
-                $paymentInfoMapper->where('type', $request->getDataList('payment_types'));
-            }
+            // @todo: what if the primary address is not in position 1?
+            $address = \reset($account->locations);
 
-            $paymentInfo = $paymentInfoMapper->execute();
+            $internalRequest  = new HttpRequest();
+            $internalResponse = new HttpResponse();
+
+            $internalRequest->header->account = $request->header->account;
+            $internalRequest->setData('account', $request->header->account);
+            $internalRequest->setData('number', 100000 + $request->header->account);
+            $internalRequest->setData('address', $request->getDataString('address') ?? $address->address);
+            $internalRequest->setData('postal', $request->getDataString('postal') ?? $address->postal);
+            $internalRequest->setData('city', $request->getDataString('city') ?? $address->city);
+            $internalRequest->setData('country', $request->getDataString('country') ?? $address->country);
+            $internalRequest->setData('state', $request->getDataString('state') ?? $address->state);
+            $internalRequest->setData('vat_id', $request->getDataString('vat_id') ?? '');
+            $internalRequest->setData('unit', $request->getDataInt('unit'));
+
+            $this->app->moduleManager->get('ClientManagement', 'Api')->apiClientCreate($internalRequest, $internalResponse);
         }
+
+        $paymentInfoMapper = PaymentMapper::getAll()
+            ->where('account', $request->header->account)
+            ->where('status', PaymentStatus::ACTIVATE);
+
+        if ($request->hasData('payment_types')) {
+            $paymentInfoMapper->where('type', $request->getDataList('payment_types'));
+        }
+
+        $paymentInfo = $paymentInfoMapper->execute();
 
         $request->setData('client', $client->id, true);
         $bill = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBill($client, $request);
