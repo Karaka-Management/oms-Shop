@@ -13,11 +13,11 @@
 declare(strict_types=1);
 
 return ['Shop' => [
-    'Price'                 => 'Price',
-    'Buy'                   => 'Buy',
-    'Website'               => 'Website',
-    'Demo'                  => 'Demo',
-    'Download'              => 'Download',
-    'Net'                   => 'Net',
-    'Gross'                 => 'Gross',
+    'Buy'      => 'Buy',
+    'Demo'     => 'Demo',
+    'Download' => 'Download',
+    'Gross'    => 'Gross',
+    'Net'      => 'Net',
+    'Price'    => 'Price',
+    'Website'  => 'Website',
 ]];
