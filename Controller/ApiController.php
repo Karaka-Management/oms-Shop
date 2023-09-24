@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Modules\Shop\Controller;
 
 use Modules\Admin\Models\AccountMapper;
+use Modules\Admin\Models\NullAddress;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\ClientManagement\Models\ClientMapper;
@@ -214,6 +215,7 @@ final class ApiController extends Controller
 
         // Create client if no client created for this account
         if ($client->id === 0) {
+            /** @var \Modules\Admin\Models\Account $account */
             $account = AccountMapper::get()
                 ->with('locations')
                 ->where('id', $request->header->account)
@@ -221,6 +223,7 @@ final class ApiController extends Controller
 
             // @todo: what if the primary address is not in position 1?
             $address = \reset($account->locations);
+            $address = $address === false ? new NullAddress() : $address;
 
             $internalRequest  = new HttpRequest();
             $internalResponse = new HttpResponse();
@@ -257,6 +260,7 @@ final class ApiController extends Controller
             $paymentInfoMapper->where('type', $request->getDataList('payment_types'));
         }
 
+        /** @var \Modules\Payment\Models\Payment[] $paymentInfo */
         $paymentInfo = $paymentInfoMapper->execute();
 
         $request->setData('client', $client->id, true);
