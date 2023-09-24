@@ -296,7 +296,11 @@ final class ApiController extends Controller
         // @tood: make this configurable (either from the customer payment info or some item default setting)!!!
         if ($item->getAttribute('subscription')->value->getValue() === 1) {
             $response->header->status = RequestStatusCode::R_303;
-            $response->header->set('Location', $item->getAttribute('one_click_pay_cc')->value->getValue(), true);
+            $response->header->set(
+                'Location',
+                $item->getAttribute('one_click_pay_cc')->value->valueStr ?? '',
+                true
+            );
         } else {
             $this->app->moduleManager->get('Payment', 'Api')->setupStripe($request, $response, $bill, $data);
         }

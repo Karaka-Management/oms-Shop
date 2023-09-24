@@ -136,7 +136,6 @@ final class Application
 
         /** @var ConnectionAbstract $con */
         $con = $this->app->dbPool->get();
-        $con->connect();
         DataMapperFactory::db($con);
 
         $this->app->cachePool      = new CachePool();
