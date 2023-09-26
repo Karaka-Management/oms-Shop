@@ -353,8 +353,8 @@ final class Application
     private function initResponseHead(Head $head, HttpRequest $request, HttpResponse $response) : void
     {
         /* Load assets */
-        $head->addAsset(AssetType::CSS, '../Resources/fonts/fontawesome/css/font-awesome.min.css?v=1.0.0');
-        $head->addAsset(AssetType::CSS, '../Resources/fonts/Roboto/roboto.css?v=1.0.0');
+        $head->addAsset(AssetType::CSS, '../Resources/fonts/fontawesome/css/font-awesome.min.css');
+        $head->addAsset(AssetType::CSS, '../Resources/fonts/Roboto/roboto.css');
         $head->addAsset(AssetType::CSS, '../Web/{APPNAME}/css/shop.css?v=1.0.0');
 
         // Framework
