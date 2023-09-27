@@ -51,14 +51,14 @@ final class AppController extends ModuleAbstract
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return RenderableInterface
      *
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewFront(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+    public function viewFront(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Web/{APPNAME}/tpl/front');
@@ -71,14 +71,14 @@ final class AppController extends ModuleAbstract
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return RenderableInterface
      *
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewComponents(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+    public function viewComponents(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Web/{APPNAME}/tpl/components');
@@ -91,14 +91,14 @@ final class AppController extends ModuleAbstract
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return RenderableInterface
      *
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewImprint(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+    public function viewImprint(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Web/{APPNAME}/tpl/imprint');
@@ -111,14 +111,14 @@ final class AppController extends ModuleAbstract
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return RenderableInterface
      *
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewTerms(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+    public function viewTerms(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Web/{APPNAME}/tpl/terms');
@@ -131,14 +131,14 @@ final class AppController extends ModuleAbstract
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return RenderableInterface
      *
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewDataPrivacy(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+    public function viewDataPrivacy(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Web/{APPNAME}/tpl/privacy');
@@ -151,14 +151,14 @@ final class AppController extends ModuleAbstract
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return RenderableInterface
      *
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewList(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+    public function viewList(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Web/{APPNAME}/tpl/list');
@@ -171,14 +171,14 @@ final class AppController extends ModuleAbstract
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return RenderableInterface
      *
      * @since 1.0.0
      * @codeCoverageIgnore
      */
-    public function viewItem(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : RenderableInterface
+    public function viewItem(RequestAbstract $request, ResponseAbstract $response, array $data = []) : RenderableInterface
     {
         $view = new View($this->app->l11nManager, $request, $response);
         $view->setTemplate('/Web/{APPNAME}/tpl/item');

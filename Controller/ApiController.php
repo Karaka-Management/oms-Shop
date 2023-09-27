@@ -47,7 +47,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -55,7 +55,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiItemFileDownload(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiItemFileDownload(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         // Handle public files
         /** @var \Modules\ItemManagement\Models\Item $item */
@@ -134,7 +134,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -142,7 +142,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiSchemaCreate(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiSchemaCreate(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         $schema = $this->buildSchema(new NullItem(), $request);
 
@@ -193,7 +193,7 @@ final class ApiController extends Controller
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
-     * @param mixed            $data     Generic data
+     * @param array            $data     Generic data
      *
      * @return void
      *
@@ -201,7 +201,7 @@ final class ApiController extends Controller
      *
      * @since 1.0.0
      */
-    public function apiOneClickBuy(RequestAbstract $request, ResponseAbstract $response, mixed $data = null) : void
+    public function apiOneClickBuy(RequestAbstract $request, ResponseAbstract $response, array $data = []) : void
     {
         /** @var \Modules\ClientManagement\Models\Client $client */
         $client = ClientMapper::get()
