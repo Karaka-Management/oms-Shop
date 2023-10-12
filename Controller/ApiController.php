@@ -164,10 +164,10 @@ final class ApiController extends Controller
     {
         $images = $item->getFilesByTypeName('shop_primary_image');
 
-        // @todo: implement https://schema.org/Product
         $schema = [
             '@context'    => 'https://schema.org/',
             '@type'       => 'Product',
+            'identifier'  => $item->number,
             'name'        => $item->getL11n('name1')->content,
             'description' => $item->getL11n('description_short')->content,
             'image'       => [
@@ -178,8 +178,113 @@ final class ApiController extends Controller
                 'price'         => $item->salesPrice->getAmount(),
                 'availability'  => 'http://schema.org/InStock',
             ],
-            //'isVariantOf' => '...',
         ];
+
+        if (!empty($attr = $item->getAttribute('brand')->value->getValue())) {
+            $schema['brand'] = [
+                '@type' => 'Brand',
+                'name' => $attr
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('model')->value->getValue())) {
+            $schema['model'] = $attr;
+        }
+
+        if (!empty($attr = $item->getAttribute('color')->value->getValue())) {
+            $schema['color'] = $attr;
+        }
+
+        if (!empty($attr = $item->getAttribute('country_of_origin')->value->getValue())) {
+            $schema['countryOfOrigin'] = [
+                '@type' => 'Country',
+                'identifier' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('country_of_assembly')->value->getValue())) {
+            $schema['countryOfAssembly'] = $attr;
+        }
+
+        if (!empty($attr = $item->getAttribute('country_of_last_processing')->value->getValue())) {
+            $schema['countryOfLastProcessing'] = $attr;
+        }
+
+        if (!empty($attr = $item->getAttribute('gtin')->value->getValue())) {
+            $schema['gtin'] = $attr;
+        }
+
+        if (!empty($attr = $item->getAttribute('releasedate')->value->getValue())) {
+            $schema['releasedate'] = $attr;
+        }
+
+        if (!empty($attr = $item->getAttribute('weight')->value->getValue())) {
+            $schema['weight'] = [
+                '@type' => 'QuantitativeValue',
+                'value' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('width')->value->getValue())) {
+            $schema['width'] = [
+                '@type' => 'QuantitativeValue',
+                'value' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('height')->value->getValue())) {
+            $schema['height'] = [
+                '@type' => 'QuantitativeValue',
+                'value' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('manufacturer')->value->getValue())) {
+            $schema['manufacturer'] = [
+                '@type' => 'Organization',
+                'legalName' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('variantof')->value->getValue())) {
+            $schema['isVariantOf'] = [
+                '@type' => 'ProductGroup',
+                'productGroupID' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('accessoryfor')->value->getValue())) {
+            if (!isset($schema['isAccessoryOrSparePartFor'])) {
+                $schema['isAccessoryOrSparePartFor'] = [];
+            }
+
+            $schema['isAccessoryOrSparePartFor'][] = [
+                '@type' => 'Product',
+                'identifier' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('sparepartfor')->value->getValue())) {
+            if (!isset($schema['isAccessoryOrSparePartFor'])) {
+                $schema['isAccessoryOrSparePartFor'] = [];
+            }
+
+            $schema['isAccessoryOrSparePartFor'][] = [
+                '@type' => 'Product',
+                'identifier' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('consumablefor')->value->getValue())) {
+            $schema['isConsumableFor'] = [
+                '@type' => 'Product',
+                'identifier' => $attr,
+            ];
+        }
+
+        if (!empty($attr = $item->getAttribute('isfamilyfriendly')->value->getValue())) {
+            $schema['isFamilyFriendly'] = (bool) $attr;
+        }
 
         foreach ($images as $image) {
             $schema['image'][] = $request->uri->getBase() . '/' . $image->getPath();
