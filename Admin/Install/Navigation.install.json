@@ -7,7 +7,7 @@
         "name": "Shop",
         "uri": null,
         "target": "self",
-        "icon": "fa fa-wrench",
+        "icon": "build",
         "order": 15,
         "from": "Shop",
         "permission": {
