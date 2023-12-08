@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace Modules\Shop\Controller;
 
 use Modules\Admin\Models\AccountMapper;
-use Modules\Admin\Models\NullAddress;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\ClientManagement\Models\ClientMapper;
@@ -30,6 +29,7 @@ use phpOMS\Message\Http\HttpResponse;
 use phpOMS\Message\Http\RequestStatusCode;
 use phpOMS\Message\RequestAbstract;
 use phpOMS\Message\ResponseAbstract;
+use phpOMS\Stdlib\Base\NullAddress;
 use phpOMS\System\MimeType;
 
 /**
@@ -79,13 +79,13 @@ final class ApiController extends Controller
         }
 
         // Handle private files
-        // @todo: this is another example where it would be useful to have clients and items as models in the bill and bill element
+        // @todo this is another example where it would be useful to have clients and items as models in the bill and bill element
         /** @var \Modules\ClientManagement\Models\Client $client */
         $client = ClientMapper::get()
             ->where('account', $request->header->account)
             ->execute();
 
-        // @todo: only for sales invoice, currently also for offers
+        // @todo only for sales invoice, currently also for offers
         /** @var \Modules\Billing\Models\Bill[] $bills */
         $bills = BillMapper::getAll()
             ->with('elements')
@@ -326,7 +326,7 @@ final class ApiController extends Controller
                 ->where('id', $request->header->account)
                 ->execute();
 
-            // @todo: what if the primary address is not in position 1?
+            // @todo what if the primary address is not in position 1?
             $address = \reset($account->locations);
             $address = $address === false ? new NullAddress() : $address;
 
@@ -391,7 +391,7 @@ final class ApiController extends Controller
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = $itemMapper->execute();
 
-        // @todo: consider to first create an offer = cart and only when paid turn it into an invoice. This way it's also easy to analyse the conversion rate.
+        // @todo consider to first create an offer = cart and only when paid turn it into an invoice. This way it's also easy to analyse the conversion rate.
 
         $billElement = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBillElement($client, $item, $bill, $request);
         $bill->addElement($billElement);
