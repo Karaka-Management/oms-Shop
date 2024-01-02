@@ -183,7 +183,7 @@ final class ApiController extends Controller
         if (!empty($attr = $item->getAttribute('brand')->value->getValue())) {
             $schema['brand'] = [
                 '@type' => 'Brand',
-                'name' => $attr
+                'name'  => $attr,
             ];
         }
 
@@ -197,7 +197,7 @@ final class ApiController extends Controller
 
         if (!empty($attr = $item->getAttribute('country_of_origin')->value->getValue())) {
             $schema['countryOfOrigin'] = [
-                '@type' => 'Country',
+                '@type'      => 'Country',
                 'identifier' => $attr,
             ];
         }
@@ -241,14 +241,14 @@ final class ApiController extends Controller
 
         if (!empty($attr = $item->getAttribute('manufacturer')->value->getValue())) {
             $schema['manufacturer'] = [
-                '@type' => 'Organization',
+                '@type'     => 'Organization',
                 'legalName' => $attr,
             ];
         }
 
         if (!empty($attr = $item->getAttribute('variantof')->value->getValue())) {
             $schema['isVariantOf'] = [
-                '@type' => 'ProductGroup',
+                '@type'          => 'ProductGroup',
                 'productGroupID' => $attr,
             ];
         }
@@ -259,7 +259,7 @@ final class ApiController extends Controller
             }
 
             $schema['isAccessoryOrSparePartFor'][] = [
-                '@type' => 'Product',
+                '@type'      => 'Product',
                 'identifier' => $attr,
             ];
         }
@@ -270,14 +270,14 @@ final class ApiController extends Controller
             }
 
             $schema['isAccessoryOrSparePartFor'][] = [
-                '@type' => 'Product',
+                '@type'      => 'Product',
                 'identifier' => $attr,
             ];
         }
 
         if (!empty($attr = $item->getAttribute('consumablefor')->value->getValue())) {
             $schema['isConsumableFor'] = [
-                '@type' => 'Product',
+                '@type'      => 'Product',
                 'identifier' => $attr,
             ];
         }
