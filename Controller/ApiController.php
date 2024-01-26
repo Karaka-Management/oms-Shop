@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Modules\Shop\Controller;
 
 use Modules\Admin\Models\AccountMapper;
+use Modules\Billing\Models\BillElementMapper;
 use Modules\Billing\Models\BillMapper;
 use Modules\Billing\Models\BillStatus;
 use Modules\ClientManagement\Models\ClientMapper;
@@ -96,7 +97,7 @@ final class ApiController extends Controller
 
         $items = [];
         foreach ($bills as $bill) {
-            $elements = $bill->getElements();
+            $elements = $bill->elements;
 
             foreach ($elements as $element) {
                 /** @var \Modules\ItemManagement\Models\Item $item */
@@ -322,12 +323,12 @@ final class ApiController extends Controller
         if ($client->id === 0) {
             /** @var \Modules\Admin\Models\Account $account */
             $account = AccountMapper::get()
-                ->with('locations')
+                ->with('addresses')
                 ->where('id', $request->header->account)
                 ->execute();
 
             // @todo what if the primary address is not in position 1?
-            $address = \reset($account->locations);
+            $address = \reset($account->addresses);
             $address = $address === false ? new NullAddress() : $address;
 
             $internalRequest  = new HttpRequest();
@@ -354,6 +355,10 @@ final class ApiController extends Controller
                 ->with('attributes/value')
                 ->with('account')
                 ->where('account', $request->header->account)
+                ->where('attributes/type/name', [
+                    'segment', 'section', 'client_group', 'client_type',
+                    'sales_tax_code',
+                ], 'IN')
                 ->execute();
         }
 
@@ -386,19 +391,26 @@ final class ApiController extends Controller
             ->with('attributes/value')
             ->with('l11n/type')
             ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
-            ->where('l11n/language', $bill->language);
+            ->where('l11n/language', $bill->language)
+            ->where('attributes/type/name', [
+                'segment', 'section', 'sales_group', 'product_group', 'product_type',
+                'sales_tax_code', 'purchase_tax_code', 'costcenter', 'costobject',
+                'default_purchase_container', 'default_sales_container',
+                'one_click_pay_cc', 'subscription',
+            ], 'IN');
 
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = $itemMapper->execute();
 
         // @todo consider to first create an offer = cart and only when paid turn it into an invoice. This way it's also easy to analyse the conversion rate.
 
-        $billElement = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBillElement($client, $item, $bill, $request);
+        $billElement = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBillElement($item, $bill, $request);
         $bill->addElement($billElement);
 
-        $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill_element', $request->getOrigin());
+        $this->createModel($request->header->account, null, $billElement, BillElementMapper::class, 'bill_element', $request->getOrigin());
+        $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill', $request->getOrigin());
 
-        // @tood: make this configurable (either from the customer payment info or some item default setting)!!!
+        // @todo make this configurable (either from the customer payment info or some item default setting)!!!
         if ($item->getAttribute('subscription')->value->getValue() === 1) {
             $response->header->status = RequestStatusCode::R_303;
             $response->header->set(

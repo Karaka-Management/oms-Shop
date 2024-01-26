@@ -18,7 +18,7 @@ use phpOMS\Account\PermissionType;
 use phpOMS\Router\RouteVerb;
 
 return [
-    '^.*/shop/oneclick/buy.*$' => [
+    '^.*/shop/oneclick/buy(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Shop\Controller\ApiController:apiOneClickBuy',
             'verb'       => RouteVerb::GET,
@@ -29,7 +29,7 @@ return [
             ],
         ],
     ],
-    '^.*/shop/media/download.*$' => [
+    '^.*/shop/media/download(\?.*$|$)' => [
         [
             'dest'       => '\Modules\Shop\Controller\ApiController:apiItemFileDownload',
             'verb'       => RouteVerb::GET,

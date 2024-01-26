@@ -16,7 +16,7 @@ declare(strict_types=1);
 <div class="content">
     <div class="floater">
         <h1>Imprint</h1>
-        <p>Karaka</p>
+        <p>Jingga</p>
 
         <h2>Vertreten durch</h2>
         <p>Dennis Eichhorn</p>
@@ -31,7 +31,7 @@ declare(strict_types=1);
         <p>Nicht vorhanden</p>
 
         <h2>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
-        <p>Karaka</p>
+        <p>Jingga</p>
         <p>Dennis Eichhorn</p>
 
         <h2>Datenschutzbeauftragter</h2>

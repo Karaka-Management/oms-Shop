@@ -10,37 +10,37 @@ return [
             'verb' => RouteVerb::GET,
         ],
     ],
-    '^(\/[a-zA-Z]*\/*|\/)/components(\?.*|$)$' => [
+    '^(\/[a-zA-Z]*\/*|\/)/components(\?.*$|$)' => [
         [
             'dest' => '\Web\{APPNAME}\Controller\AppController:viewComponents',
             'verb' => RouteVerb::GET,
         ],
     ],
-    '^(\/[a-zA-Z]*\/*|\/)/imprint(\?.*|$)$' => [
+    '^(\/[a-zA-Z]*\/*|\/)/imprint(\?.*$|$)' => [
         [
             'dest' => '\Web\{APPNAME}\Controller\AppController:viewImprint',
             'verb' => RouteVerb::GET,
         ],
     ],
-    '^(\/[a-zA-Z]*\/*|\/)/terms(\?.*|$)$' => [
+    '^(\/[a-zA-Z]*\/*|\/)/terms(\?.*$|$)' => [
         [
             'dest' => '\Web\{APPNAME}\Controller\AppController:viewTerms',
             'verb' => RouteVerb::GET,
         ],
     ],
-    '^(\/[a-zA-Z]*\/*|\/)/privacy(\?.*|$)$' => [
+    '^(\/[a-zA-Z]*\/*|\/)/privacy(\?.*$|$)' => [
         [
             'dest' => '\Web\{APPNAME}\Controller\AppController:viewDataPrivacy',
             'verb' => RouteVerb::GET,
         ],
     ],
-    '^(\/[a-zA-Z]*\/*|\/)/list(\?.*|$)$' => [
+    '^(\/[a-zA-Z]*\/*|\/)/list(\?.*$|$)' => [
         [
             'dest' => '\Web\{APPNAME}\Controller\AppController:viewList',
             'verb' => RouteVerb::GET,
         ],
     ],
-    '^(\/[a-zA-Z]*\/*|\/)/item(\?.*|$)$' => [
+    '^(\/[a-zA-Z]*\/*|\/)/item(\?.*$|$)' => [
         [
             'dest' => '\Web\{APPNAME}\Controller\AppController:viewItem',
             'verb' => RouteVerb::GET,
