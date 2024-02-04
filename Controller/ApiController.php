@@ -79,18 +79,12 @@ final class ApiController extends Controller
             }
         }
 
-        // Handle private files
-        // @todo this is another example where it would be useful to have clients and items as models in the bill and bill element
-        /** @var \Modules\ClientManagement\Models\Client $client */
-        $client = ClientMapper::get()
-            ->where('account', $request->header->account)
-            ->execute();
-
         // @todo only for sales invoice, currently also for offers
         /** @var \Modules\Billing\Models\Bill[] $bills */
         $bills = BillMapper::getAll()
+            ->with('client')
             ->with('elements')
-            ->where('client', $client->id)
+            ->where('client/account', $request->header->account)
             ->where('status', BillStatus::ARCHIVED)
             ->where('elements/item', $request->getDataInt('item'))
             ->execute();
