@@ -209,7 +209,7 @@ final class ApiController extends Controller
             $schema['gtin'] = $attr;
         }
 
-        if (!empty($attr = $item->getAttribute('releasedate')->value->getValue())) {
+        if (!empty($attr = $item->getAttribute('release_date')->value->getValue())) {
             $schema['releasedate'] = $attr;
         }
 
@@ -384,7 +384,7 @@ final class ApiController extends Controller
             ->with('attributes/type')
             ->with('attributes/value')
             ->with('l11n/type')
-            ->where('l11n/type/title', ['name1', 'name2', 'name3'], 'IN')
+            ->where('l11n/type/title', ['name1', 'name2'], 'IN')
             ->where('l11n/language', $bill->language)
             ->where('attributes/type/name', [
                 'segment', 'section', 'sales_group', 'product_group', 'product_type',
