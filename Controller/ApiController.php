@@ -249,10 +249,7 @@ final class ApiController extends Controller
         }
 
         if (!empty($attr = $item->getAttribute('accessoryfor')->value->getValue())) {
-            if (!isset($schema['isAccessoryOrSparePartFor'])) {
-                $schema['isAccessoryOrSparePartFor'] = [];
-            }
-
+            $schema['isAccessoryOrSparePartFor'] = [];
             $schema['isAccessoryOrSparePartFor'][] = [
                 '@type'      => 'Product',
                 'identifier' => $attr,
@@ -401,7 +398,7 @@ final class ApiController extends Controller
         $billElement = $this->app->moduleManager->get('Billing', 'ApiBill')->createBaseBillElement($item, $bill, $request);
         $bill->addElement($billElement);
 
-        $this->createModel($request->header->account, null, $billElement, BillElementMapper::class, 'bill_element', $request->getOrigin());
+        $this->createModel($request->header->account, $billElement, BillElementMapper::class, 'bill_element', $request->getOrigin());
         $this->updateModel($request->header->account, $old, $bill, BillMapper::class, 'bill', $request->getOrigin());
 
         // @todo make this configurable (either from the customer payment info or some item default setting)!!!
