@@ -22,6 +22,7 @@ return [
         [
             'dest'       => '\Modules\Shop\Controller\ApiController:apiOneClickBuy',
             'verb'       => RouteVerb::GET,
+            'csrf'       => true,
             'permission' => [
                 'module' => ApiController::NAME,
                 'type'   => PermissionType::CREATE,
@@ -33,6 +34,7 @@ return [
         [
             'dest'       => '\Modules\Shop\Controller\ApiController:apiItemFileDownload',
             'verb'       => RouteVerb::GET,
+            'csrf'       => true,
             'permission' => [
             ],
         ],
