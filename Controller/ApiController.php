@@ -87,7 +87,7 @@ final class ApiController extends Controller
             ->where('client/account', $request->header->account)
             ->where('status', BillStatus::ARCHIVED)
             ->where('elements/item', $request->getDataInt('item'))
-            ->execute();
+            ->executeGetArray();
 
         $items = [];
         foreach ($bills as $bill) {
@@ -249,7 +249,7 @@ final class ApiController extends Controller
         }
 
         if (!empty($attr = $item->getAttribute('accessoryfor')->value->getValue())) {
-            $schema['isAccessoryOrSparePartFor'] = [];
+            $schema['isAccessoryOrSparePartFor']   = [];
             $schema['isAccessoryOrSparePartFor'][] = [
                 '@type'      => 'Product',
                 'identifier' => $attr,
