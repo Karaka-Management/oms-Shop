@@ -125,7 +125,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Api method to create news article
+     * Api method to create Schema
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
@@ -286,7 +286,7 @@ final class ApiController extends Controller
     }
 
     /**
-     * Api method to create news article
+     * Api method to perform one click buy
      *
      * @param RequestAbstract  $request  Request
      * @param ResponseAbstract $response Response
