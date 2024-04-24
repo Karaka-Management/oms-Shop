@@ -1,5 +1,4 @@
 jsOMS.ready(function ()
 {
-    "use strict";
-
+    'use strict';
 });
