@@ -1,0 +1,23 @@
+[
+    {
+        "name": "shop_list_image",
+        "l11n": {
+            "en": "Shop list image",
+            "de": "Shop Listenbild"
+        }
+    },
+    {
+        "name": "shop_featured_image",
+        "l11n": {
+            "en": "Shop featured image",
+            "de": "Shop Featured Bild"
+        }
+    },
+    {
+        "name": "shop_primary_image",
+        "l11n": {
+            "en": "Shop primary image",
+            "de": "Shop Hauptbild"
+        }
+    }
+]

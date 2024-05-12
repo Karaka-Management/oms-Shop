@@ -62,15 +62,15 @@ final class ApiController extends Controller
         /** @var \Modules\ItemManagement\Models\Item $item */
         $item = ItemMapper::get()
             ->with('files')
-            ->with('files/types')
+            ->with('files/tags')
             ->where('id', $request->getDataInt('item'))
             ->execute();
 
         $itemFiles = $item->files;
         foreach ($itemFiles as $file) {
             if ($file->id === $request->getDataInt('id')
-                && ($file->hasMediaTypeName('item_demo_download')
-                    || $file->hasMediaTypeName('item_public_download'))
+                && ($file->hasMediaTagName('item_demo_download')
+                    || $file->hasMediaTagName('item_public_download'))
             ) {
                 $this->app->moduleManager->get('Media', 'Api')
                     ->apiMediaExport($request, $response, ['ignorePermission' => true]);
@@ -110,7 +110,7 @@ final class ApiController extends Controller
 
             foreach ($files as $file) {
                 if ($file->id === $request->getDataInt('id')
-                    && $file->hasMediaTypeName('item_purchase_download')
+                    && $file->hasMediaTagName('item_purchase_download')
                 ) {
                     $this->app->moduleManager->get('Media', 'Api')
                         ->apiMediaExport($request, $response, ['ignorePermission' => true]);
@@ -157,7 +157,7 @@ final class ApiController extends Controller
      */
     public function buildSchema(Item $item, RequestAbstract $request) : array
     {
-        $images = $item->getFilesByTypeName('shop_primary_image');
+        $images = $item->getFilesByTagName('shop_primary_image');
 
         $schema = [
             '@context'    => 'https://schema.org/',
