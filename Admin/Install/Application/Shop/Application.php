@@ -6,7 +6,7 @@
  *
  * @package   Web\{APPNAME}
  * @copyright Dennis Eichhorn
- * @license   OMS License 2.0
+ * @license   OMS License 2.2
  * @version   1.0.0
  * @link      https://jingga.app
  */
@@ -50,7 +50,7 @@ use Web\{APPNAME}\ShopView;
  * Application class.
  *
  * @package Web\{APPNAME}
- * @license OMS License 2.0
+ * @license OMS License 2.2
  * @link    https://jingga.app
  * @since   1.0.0
  * @codeCoverageIgnore
