@@ -12,7 +12,6 @@
  */
 declare(strict_types=1);
 ?>
-
 <div class="content">
     <div class="floater">
         <h1>Imprint</h1>
