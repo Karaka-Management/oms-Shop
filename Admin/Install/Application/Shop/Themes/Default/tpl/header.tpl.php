@@ -19,7 +19,7 @@ use phpOMS\Uri\UriFactory;
     <nav>
        <ul>
           <li><a href="<?= UriFactory::build('{/base}/{/app}'); ?>">Website</a>
-          <li><a href="<?= UriFactory::build('{/base}/{/app}/components'); ?>">Profile</a>
+          <li><a href="<?= UriFactory::build('{/app}/components'); ?>">Profile</a>
        </ul>
     </nav>
     <div id="search">

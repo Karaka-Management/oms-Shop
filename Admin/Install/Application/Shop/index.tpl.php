@@ -19,7 +19,7 @@ use phpOMS\Uri\UriFactory;
 $head = $this->head;
 
 /** @var array $dispatch */
-$dispatch = $this->getData('dispatch') ?? [];
+$dispatch = $this->data['dispatch'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="<?= $this->printHtml($this->response->header->l11n->language); ?>">
